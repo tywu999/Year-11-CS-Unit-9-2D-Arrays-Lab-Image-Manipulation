@@ -1,5 +1,6 @@
 package code;
 
+import image.APImage;
 import image.Pixel;
 
 public class ImageManipulation {
@@ -8,8 +9,11 @@ public class ImageManipulation {
      *  Write a statement that will display the image in a window
      */
     public static void main(String[] args) {
-
-
+        grayScale("cyberpunk2077.jpg");
+        blackAndWhite("cyberpunk2077.jpg");
+        edgeDetection("cyberpunk2077.jpg", 20);
+        reflectImage("cyberpunk2077.jpg");
+        rotateImage("cyberpunk2077.jpg");
     }
 
     /** CHALLENGE ONE: Grayscale
@@ -21,7 +25,19 @@ public class ImageManipulation {
      * Calculate the average of the red, green, and blue components of the pixel.
      * Set the red, green, and blue components to this average value. */
     public static void grayScale(String pathOfFile) {
-
+        APImage image = new APImage("cyberpunk2077.jpg");
+        for(int i = 0; i < image.getWidth(); i++){
+            for(int j = 0; j < image.getHeight(); j++){
+                Pixel pixel = image.getPixel(i, j);
+                int sum = pixel.getBlue() + pixel.getGreen() + pixel.getRed();
+                int avg = sum/3;
+                pixel.setBlue(avg);
+                pixel.setRed(avg);
+                pixel.setGreen(avg);
+                image.setPixel(i, j, pixel);
+            }
+        }
+        image.draw();
     }
 
     /** A helper method that can be used to assist you in each challenge.
@@ -30,7 +46,9 @@ public class ImageManipulation {
      * @return the average RGB value
      */
     private static int getAverageColour(Pixel pixel) {
-        return 0;
+        int sum = pixel.getBlue() + pixel.getGreen() + pixel.getRed();
+        int avg = sum/3;
+        return avg;
     }
 
     /** CHALLENGE TWO: Black and White
@@ -43,7 +61,25 @@ public class ImageManipulation {
      * If the average is less than 128, set the pixel to black
      * If the average is equal to or greater than 128, set the pixel to white */
     public static void blackAndWhite(String pathOfFile) {
-
+        APImage image = new APImage("cyberpunk2077.jpg");
+        for(int i = 0; i < image.getWidth(); i++){
+            for(int j = 0; j < image.getHeight(); j++){
+                Pixel pixel = image.getPixel(i, j);
+                int avg = getAverageColour(pixel);
+                if(avg < 128){
+                    pixel.setGreen(0);
+                    pixel.setRed(0);
+                    pixel.setBlue(0);
+                }
+                else{
+                    pixel.setGreen(255);
+                    pixel.setRed(255);
+                    pixel.setBlue(255);
+                }
+                image.setPixel(i, j, pixel);
+            }
+        }
+        image.draw();
     }
 
     /** CHALLENGE Three: Edge Detection
@@ -69,7 +105,30 @@ public class ImageManipulation {
      * edge detection to an image using a threshold of 35
      *  */
     public static void edgeDetection(String pathToFile, int threshold) {
+        APImage image = new APImage("cyberpunk2077.jpg");
+        for(int i = 0; i < image.getWidth()-1; i++){
+            for(int j = 1; j < image.getHeight()-1; j++){
+                Pixel pixel = image.getPixel(i, j);
+                int avg = getAverageColour(pixel);
+                Pixel pixelL = image.getPixel(i, j-1);
+                int avgL = getAverageColour(pixelL);
+                Pixel pixelB = image.getPixel(i+1, j);
+                int avgB = getAverageColour(pixelB);
+                if(Math.abs(avg-avgB) <= threshold ||  Math.abs(avg-avgL) <= threshold){
+                    pixel.setGreen(255);
+                    pixel.setRed(255);
+                    pixel.setBlue(255);
+                }
+                else{
+                    pixel.setGreen(0);
+                    pixel.setRed(0);
+                    pixel.setBlue(0);
+                }
 
+                image.setPixel(i, j, pixel);
+            }
+        }
+        image.draw();
     }
 
     /** CHALLENGE Four: Reflect Image
@@ -79,7 +138,15 @@ public class ImageManipulation {
      *
      */
     public static void reflectImage(String pathToFile) {
-
+        APImage image = new APImage("cyberpunk2077.jpg");
+        for(int i = 0; i < image.getWidth()/2; i++){
+            for(int j = 0; j < image.getHeight(); j++){
+                Pixel pixel1 = image.getPixel(i, j);
+                image.setPixel(i,j, image.getPixel(image.getWidth()-i-1, j));
+                image.setPixel(image.getWidth()-i-1, j, pixel1);
+            }
+        }
+        image.draw();
     }
 
     /** CHALLENGE Five: Rotate Image
@@ -89,6 +156,17 @@ public class ImageManipulation {
      *
      *  */
     public static void rotateImage(String pathToFile) {
+        APImage image = new APImage("cyberpunk2077.jpg");
+        int width = image.getWidth();
+        int height = image.getHeight();
+        APImage finalImage = new APImage(height, width);
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+                Pixel pixel = image.getPixel(i, j);
+                finalImage.setPixel(height-j-1, i, pixel);
+            }
+        }
+        finalImage.draw();
 
     }
 
